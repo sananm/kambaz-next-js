@@ -2,14 +2,21 @@ import Link from 'next/link';
 export default function KambazNavigation() {
   return (
     <div id='wd-kambaz-navigation'>
-      <div >
+      <div>
         <div>
           <strong>Mohammed Sanan Moinuddin</strong>
         </div>
-        <br/>
-        <div><strong>NUID: 002048998</strong></div>
-        
+        <br />
+        <div>
+          <strong>NUID: 002048998</strong>
+        </div>
+        <div>
+          <Link href='https://github.com/sananm/kambaz-next-js'> Github </Link>
+        </div>
       </div>
+
+      <br />
+      
 
       <a href='https://www.northeastern.edu/' id='wd-neu-link' target='_blank'>
         Northeastern

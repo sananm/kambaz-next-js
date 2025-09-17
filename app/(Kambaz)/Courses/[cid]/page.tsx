@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
 export default function CoursesPage({ params }: { params: { cid: string } }) {
   const { cid } = params;
