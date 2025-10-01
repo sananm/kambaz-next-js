@@ -1,20 +1,130 @@
-import { ReactNode } from "react";
+'use client';
+import { ReactNode, useState } from "react";
 import CourseNavigation from "./Navigation";
-export default async function CoursesLayout(
-  { children, params }: Readonly<{ children: ReactNode; params: Promise<{ cid: string }>; }>) {
-  const { cid } = await params;
+import { FaBars, FaTimes } from "react-icons/fa";
+import { AiOutlineDashboard } from 'react-icons/ai';
+import { IoCalendarOutline } from 'react-icons/io5';
+import { LiaBookSolid, LiaCogSolid } from 'react-icons/lia';
+import { FaInbox, FaRegCircleUser } from 'react-icons/fa6';
+import Link from 'next/link';
+
+export default function CoursesLayout({ 
+  children, 
+  cid 
+}: { 
+  children: ReactNode; 
+  cid: string;
+}) {
+  const [showMainNav, setShowMainNav] = useState(false);
+  const [showCourseNav, setShowCourseNav] = useState(false);
+
   return (
     <div id="wd-courses">
-      <h2>Courses {cid}</h2>
-      <hr />
-      <table>
-        <tbody>
-          <tr>
-            <td valign="top" width="200"> <CourseNavigation /> </td>
-            <td valign="top" width="100%"> {children} </td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Mobile header bar - only visible on small screens */}
+      <div className="d-md-none bg-black text-white p-2 d-flex justify-content-between align-items-center" 
+           style={{ marginLeft: '-1rem', marginRight: '-1rem', marginTop: '-1rem' }}>
+        
+        {/* Left button with dropdown for main navigation */}
+        <div className="position-relative">
+          <button 
+            className="btn btn-link text-white p-0"
+            onClick={() => {
+              setShowMainNav(!showMainNav);
+              setShowCourseNav(false);
+            }}
+            aria-label="Toggle main navigation"
+          >
+            <FaBars size={20} />
+          </button>
+          
+          {showMainNav && (
+            <div 
+              className="position-absolute top-100 start-0 bg-white shadow-lg rounded mt-2 p-2"
+              style={{ 
+                width: '200px',
+                zIndex: 1000,
+              }}
+            >
+              <Link href="/Dashboard" className="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-bg-light">
+                <AiOutlineDashboard className="me-2" />
+                Dashboard
+              </Link>
+              <Link href="/Account" className="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-bg-light">
+                <FaRegCircleUser className="me-2" />
+                Account
+              </Link>
+              <Link href="/Dashboard" className="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-bg-light">
+                <LiaBookSolid className="me-2" />
+                Courses
+              </Link>
+              <Link href="https://registrar.northeastern.edu/article/academic-calendar/" 
+                    target="_blank"
+                    className="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-bg-light">
+                <IoCalendarOutline className="me-2" />
+                Calendar
+              </Link>
+              <Link href="https://outlook.office.com/mail/" 
+                    target="_blank"
+                    className="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-bg-light">
+                <FaInbox className="me-2" />
+                Inbox
+              </Link>
+              <Link href="/Labs" className="d-flex align-items-center text-decoration-none text-dark p-2 rounded hover-bg-light">
+                <LiaCogSolid className="me-2" />
+                Labs
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Center content */}
+        <div className="text-center">
+          <div style={{ fontSize: '11px', opacity: 0.8 }}>CS5610</div>
+          <div style={{ fontSize: '14px', fontWeight: 500 }}>Modules</div>
+        </div>
+
+        {/* Right button with dropdown for course navigation */}
+        <div className="position-relative">
+          <button 
+            className="btn btn-link text-white p-0"
+            onClick={() => {
+              setShowCourseNav(!showCourseNav);
+              setShowMainNav(false);
+            }}
+            aria-label="Toggle course navigation"
+          >
+            <FaBars size={20} />
+          </button>
+          
+          {showCourseNav && (
+            <div 
+              className="position-absolute top-100 end-0 bg-white shadow-lg border rounded mt-2"
+              style={{ 
+                width: '200px',
+                zIndex: 1000,
+              }}
+            >
+              <CourseNavigation />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop header - only visible on medium screens and up */}
+      <h2 className="mb-3 d-none d-md-block">Courses {cid}</h2>
+      <hr className="d-none d-md-block" />
+      
+      <div className="d-flex">
+        {/* Desktop course navigation */}
+        <div className="d-none d-md-block" style={{ width: '200px', flexShrink: 0 }}>
+          <CourseNavigation />
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-fill">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

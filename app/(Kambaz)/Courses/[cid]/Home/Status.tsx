@@ -1,18 +1,52 @@
+import { MdDoNotDisturbAlt } from 'react-icons/md';
+import { FaCheckCircle, FaHome } from 'react-icons/fa';
+import { BiImport } from 'react-icons/bi';
+import { LiaFileImportSolid } from 'react-icons/lia';
+import { Button } from 'react-bootstrap';
+import { AiFillHome, AiOutlineBarChart, AiOutlineBell, AiOutlineNotification } from 'react-icons/ai';
+import { FaChartBar } from 'react-icons/fa6';
+import { IoStatsChart } from 'react-icons/io5';
+{
+  /* Find more icons */
+}
 export default function CourseStatus() {
   return (
-    <div id='wd-course-status'>
+    <div id='wd-course-status' style={{ width: '300px' }}>
       <h2>Course Status</h2>
-      <button>Unpublish</button> <button>Publish</button>
-      <button id='wd-publish'>Publish</button>
+      <div className='d-flex'>
+        <div className='w-50 pe-1'>
+          <Button variant='secondary' size='lg' className='w-100 text-nowrap '>
+            <MdDoNotDisturbAlt className='me-2 fs-5' /> Unpublish{' '}
+          </Button>{' '}
+        </div>
+        <div className='w-50'>
+          <Button variant='success' size='lg' className='w-100'>
+            <FaCheckCircle className='me-2 fs-5' /> Publish{' '}
+          </Button>{' '}
+        </div>
+      </div>
       <br />
-      <br />
-      <button id='wd-import-existing-content'>Import Existing Content</button>
-      <button id='wd-import-from-commons'>Import from Commons</button>
-      <button id='wd-choose-home-page'>Choose Home Page</button>
-      <button id='wd-view-course-stream'>View Course Stream</button>
-      <button id='wd-new-announcement'>New Announcement</button>
-      <button id='wd-new-analytics'>New Analytics</button>
-      <button>View Course Notifications</button>
+      <Button variant='secondary' size='lg' className='w-100 mt-1 text-start'>
+        <BiImport className='me-2 fs-5' /> Import Existing Content{' '}
+      </Button>
+      <Button variant='secondary' size='lg' className='w-100 mt-1 text-start'>
+        <LiaFileImportSolid className='me-2 fs-5' /> Import from Commons{' '}
+      </Button>
+      <Button variant='secondary' size='lg' className='w-100 mt-1 text-start'>
+        <AiFillHome className='me-2 fs-5' /> Choose Home Page{' '}
+      </Button>
+      <Button variant='secondary' size='lg' className='w-100 mt-1 text-start'>
+        <IoStatsChart className='me-2 fs-5' /> View Course Screen{' '}
+      </Button>
+      <Button variant='secondary' size='lg' className='w-100 mt-1 text-start'>
+        <AiOutlineNotification  className='me-2 fs-5' /> New Announcement{' '}
+      </Button>
+      <Button variant='secondary' size='lg' className='w-100 mt-1 text-start'>
+        <IoStatsChart className='me-2 fs-5' /> New Analytics{' '}
+      </Button>
+      <Button variant='secondary' size='lg' className='w-100 mt-1 text-start'>
+        <AiOutlineBell className='me-2 fs-5' /> View Course Notifications{' '}
+      </Button>
     </div>
   );
 }

@@ -1,22 +1,28 @@
-import { ReactNode } from 'react';
-import KambazNavigation from './Navigation';
-export default function KambazLayout({
-  children,
-}: Readonly<{ children: ReactNode }>) {
+'use client';
+import { ReactNode, useState } from "react";
+import KambazNavigation from "./Navigation";
+import { FaBars, FaTimes } from "react-icons/fa";
+import "./styles.css";
+
+export default function KambazLayout({ children }: { children: ReactNode }) {
+  const [showMainNav, setShowMainNav] = useState(false);
+
   return (
-    <table>
-      <tbody>
-        <tr>
-          <td valign='top' width='200'>
-            {' '}
-            <KambazNavigation />{' '}
-          </td>
-          <td valign='top' width='100%'>
-            {' '}
-            {children}{' '}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div id="wd-kambaz">
+      <div className="d-flex">
+        {/* Desktop main navigation - hidden on mobile */}
+        <div className="d-none d-md-block">
+          <KambazNavigation />
+        </div>
+        
+
+        
+
+        {/* Main content */}
+        <div className="wd-main-content-offset p-3 flex-fill">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
