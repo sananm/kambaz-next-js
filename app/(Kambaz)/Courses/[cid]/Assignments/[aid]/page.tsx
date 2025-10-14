@@ -1,22 +1,45 @@
 'use client';
 import Link from 'next/link';
-
 import { useParams } from 'next/navigation';
+import { assignments as assignmentsData } from '../../../../Database';
 
 export default function AssignmentEditor() {
-  const { aid } = useParams<{ aid: string }>();
+  const { cid, aid } = useParams<{ cid: string; aid: string }>();
+  
+  // Get assignments array from the imported data
+  const assignments = assignmentsData.assignments || assignmentsData;
+  
+  // Find the specific assignment
+  const assignment = assignments.find(a => a._id === aid);
+  
+  // If assignment not found, show error
+  if (!assignment) {
+    return (
+      <div className='container-fluid px-4'>
+        <div className='alert alert-danger'>
+          Assignment not found
+        </div>
+        <Link href={`/Courses/${cid}/Assignments`} className='btn btn-secondary'>
+          Back to Assignments
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div id='wd-assignments-editor' className='container-fluid px-4'>
       {/* Breadcrumb */}
       <nav aria-label='breadcrumb'>
         <ol className='breadcrumb'>
-          <li className='breadcrumb-item'><Link href='/Courses/1234/Assignments'>Assignments</Link></li>
+          <li className='breadcrumb-item'>
+            <Link href={`/Courses/${cid}/Assignments`}>Assignments</Link>
+          </li>
           <li className='breadcrumb-item active'>{aid}</li>
         </ol>
       </nav>
 
-      {/* Course Name */}
-      <h2 className='mb-4'>CS5610</h2>
+      {/* Course Name - You can replace this with actual course name if needed */}
+      <h2 className='mb-4'>Course {cid}</h2>
       
       <hr className='mb-4' />
 
@@ -29,7 +52,7 @@ export default function AssignmentEditor() {
           <input 
             id='wd-name' 
             className='form-control' 
-            defaultValue='A1 - ENV + HTML' 
+            defaultValue={`${assignment._id} - ${assignment.title}`}
           />
         </div>
       </div>
@@ -44,7 +67,7 @@ export default function AssignmentEditor() {
             id='wd-description' 
             className='form-control' 
             rows={10}
-            defaultValue='The assignment is available online Submit a link to the landing page of your Web application running on Netlify. The landing page should include the following: Your full name and section Links to each of the lab assignments Link to the Kanbas application Links to all relevant source code repositories The Kanbas application should include a link to navigate back to the landing page.'
+            defaultValue={assignment.description || 'The assignment is available online Submit a link to the landing page of your Web application running on Netlify. The landing page should include the following: Your full name and section Links to each of the lab assignments Link to the Kanbas application Links to all relevant source code repositories The Kanbas application should include a link to navigate back to the landing page.'}
           />
         </div>
       </div>
@@ -59,7 +82,7 @@ export default function AssignmentEditor() {
             id='wd-points' 
             type='number'
             className='form-control' 
-            defaultValue={100} 
+            defaultValue={assignment.points}
           />
         </div>
       </div>
@@ -186,7 +209,7 @@ export default function AssignmentEditor() {
               type='date' 
               id='wd-due-date' 
               className='form-control mb-3'
-              defaultValue='2024-05-13' 
+              defaultValue={assignment.dueDate ? assignment.dueDate.split('T')[0] : '2024-05-13'}
             />
             
             <div className='row'>
@@ -198,7 +221,7 @@ export default function AssignmentEditor() {
                   type='date'
                   id='wd-available-from'
                   className='form-control'
-                  defaultValue='2024-05-06'
+                  defaultValue={assignment.availableFrom || '2024-05-06'}
                 />
               </div>
               <div className='col-md-6'>
@@ -209,7 +232,7 @@ export default function AssignmentEditor() {
                   type='date'
                   id='wd-available-until'
                   className='form-control'
-                  defaultValue='2024-05-20'
+                  defaultValue={assignment.availableUntil || '2024-05-20'}
                 />
               </div>
             </div>
@@ -222,8 +245,12 @@ export default function AssignmentEditor() {
       {/* Action Buttons */}
       <div className='row'>
         <div className='col-md-10 offset-md-2'>
-          <button className='btn btn-secondary me-2'>Cancel</button>
-          <button className='btn btn-danger'>Save</button>
+          <Link href={`/Courses/${cid}/Assignments`} className='btn btn-secondary me-2'>
+            Cancel
+          </Link>
+          <Link href={`/Courses/${cid}/Assignments`} className='btn btn-danger'>
+            Save
+          </Link>
         </div>
       </div>
     </div>

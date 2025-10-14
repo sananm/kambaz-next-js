@@ -2,8 +2,36 @@ import Link from 'next/link';
 import { FaCheckCircle, FaEllipsisV, FaPlus, FaSearch } from 'react-icons/fa';
 import { BsGripVertical } from 'react-icons/bs';
 import { IoDocumentText } from 'react-icons/io5';
+import { assignments as assignmentsData } from '../../../Database';
 
-export default function Assignments() {
+export default function Assignments({ params }: { params: { cid: string } }) {
+  // Get assignments array from the imported data
+  const assignments = assignmentsData.assignments || assignmentsData;
+  
+  // Filter assignments for the current course
+  const courseAssignments = assignments.filter(
+    assignment => assignment.course === params.cid
+  );
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { 
+      month: 'short', 
+      day: 'numeric' 
+    };
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    };
+    
+    const formattedDate = date.toLocaleDateString('en-US', options);
+    const formattedTime = date.toLocaleTimeString('en-US', timeOptions).toLowerCase();
+    
+    return `${formattedDate} at ${formattedTime}`;
+  };
+
   return (
     <div id='wd-assignments' className='container-fluid px-4'>
       {/* Search and Action Buttons */}
@@ -47,86 +75,38 @@ export default function Assignments() {
           </div>
         </li>
 
-        {/* Assignment 1 - WITH GREEN BORDER */}
-        <li className='list-group-item wd-assignment-list-item' style={{ borderLeft: '3px solid #198754' }}>
-          <div className='d-flex align-items-start py-2'>
-            <BsGripVertical className='me-2 text-muted mt-1' />
-            <IoDocumentText className='me-3 text-success fs-5 mt-1' />
-            <div className='flex-grow-1'>
-              <Link
-                href='/Courses/1234/Assignments/A1'
-                className='wd-assignment-link text-decoration-none fw-bold text-dark'
-              >
-                A1 - ENV + HTML
-              </Link>
-              <div className='small text-muted mt-1'>
-                <span className='text-danger'>Multiple Modules</span> | 
-                <strong> Not available until</strong> Sept 19 at 12:00am |
+        {/* Assignment Items */}
+        {courseAssignments.map((assignment) => (
+          <li 
+            key={assignment._id}
+            className='list-group-item wd-assignment-list-item' 
+            style={{ borderLeft: '3px solid #198754' }}
+          >
+            <div className='d-flex align-items-start py-2'>
+              <BsGripVertical className='me-2 text-muted mt-1' />
+              <IoDocumentText className='me-3 text-success fs-5 mt-1' />
+              <div className='flex-grow-1'>
+                <Link
+                  href={`/Courses/${params.cid}/Assignments/${assignment._id}`}
+                  className='wd-assignment-link text-decoration-none fw-bold text-dark'
+                >
+                  {assignment._id} - {assignment.title}
+                </Link>
+                <div className='small text-muted mt-1'>
+                  <span className='text-danger'>Multiple Modules</span> | 
+                  <strong> Not available until</strong> {formatDate(assignment.availableFrom + 'T00:00:00')} |
+                </div>
+                <div className='small text-muted'>
+                  <strong>Due</strong> {formatDate(assignment.dueDate)} | {assignment.points} pts
+                </div>
               </div>
-              <div className='small text-muted'>
-                <strong>Due</strong> Sept 26 at 11:59pm | 100 pts
-              </div>
-            </div>
-            <div className='d-flex align-items-center'>
-              <FaCheckCircle className='text-success me-2' />
-              <FaEllipsisV className='text-muted' />
-            </div>
-          </div>
-        </li>
-
-        {/* Assignment 2 - WITH GREEN BORDER */}
-        <li className='list-group-item wd-assignment-list-item' style={{ borderLeft: '3px solid #198754' }}>
-          <div className='d-flex align-items-start py-2'>
-            <BsGripVertical className='me-2 text-muted mt-1' />
-            <IoDocumentText className='me-3 text-success fs-5 mt-1' />
-            <div className='flex-grow-1'>
-              <Link
-                href='/Courses/1234/Assignments/A2'
-                className='wd-assignment-link text-decoration-none fw-bold text-dark'
-              >
-                A2 - CSS + BOOTSTRAP
-              </Link>
-              <div className='small text-muted mt-1'>
-                <span className='text-danger'>Multiple Modules</span> | 
-                <strong> Not available until</strong> Sept 26 at 12:00am |
-              </div>
-              <div className='small text-muted'>
-                <strong>Due</strong> Oct 3 at 11:59pm | 100 pts
+              <div className='d-flex align-items-center'>
+                <FaCheckCircle className='text-success me-2' />
+                <FaEllipsisV className='text-muted' />
               </div>
             </div>
-            <div className='d-flex align-items-center'>
-              <FaCheckCircle className='text-success me-2' />
-              <FaEllipsisV className='text-muted' />
-            </div>
-          </div>
-        </li>
-
-        {/* Assignment 3 - WITH GREEN BORDER */}
-        <li className='list-group-item wd-assignment-list-item' style={{ borderLeft: '3px solid #198754' }}>
-          <div className='d-flex align-items-start py-2'>
-            <BsGripVertical className='me-2 text-muted mt-1' />
-            <IoDocumentText className='me-3 text-success fs-5 mt-1' />
-            <div className='flex-grow-1'>
-              <Link
-                href='/Courses/1234/Assignments/A3'
-                className='wd-assignment-link text-decoration-none fw-bold text-dark'
-              >
-                A3 - REACT + TYPESCRIPT
-              </Link>
-              <div className='small text-muted mt-1'>
-                <span className='text-danger'>Multiple Modules</span> | 
-                <strong> Not available until</strong> Oct 3 at 12:00am |
-              </div>
-              <div className='small text-muted'>
-                <strong>Due</strong> Oct 10 at 11:59pm | 100 pts
-              </div>
-            </div>
-            <div className='d-flex align-items-center'>
-              <FaCheckCircle className='text-success me-2' />
-              <FaEllipsisV className='text-muted' />
-            </div>
-          </div>
-        </li>
+          </li>
+        ))}
       </ul>
     </div>
   );
