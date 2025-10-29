@@ -100,7 +100,7 @@ export default function Dashboard() {
                     {c.description}{' '}
                   </CardText>
 
-                  {/* ✅ Fixed Go Button */}
+                  
                   <Button
                     variant='primary'
                     onClick={() => router.push(`/Courses/${c._id}/Home`)}
