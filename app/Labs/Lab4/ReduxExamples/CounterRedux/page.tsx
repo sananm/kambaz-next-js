@@ -1,10 +1,12 @@
 'use client';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, Provider } from "react-redux";
 import { increment, decrement } from "./counterReducer";
+import store from "../../store";
 export default function CounterRedux() {
   const { count } = useSelector((state: any) => state.counterReducer);
   const dispatch = useDispatch();
   return (
+    <Provider store={store}>
     <div id="wd-counter-redux">
       <h2>Counter Redux</h2>
       <h3>{count}</h3>
@@ -14,4 +16,5 @@ export default function CounterRedux() {
               id="wd-counter-redux-decrement-click"> Decrement </button>
       <hr/>
     </div>
+    </Provider>
 );}
