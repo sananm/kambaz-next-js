@@ -1,20 +1,28 @@
+'use client';
 import Link from 'next/link';
-import { FaCheckCircle, FaEllipsisV, FaPlus, FaSearch } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import { FaCheckCircle, FaEllipsisV, FaPlus, FaSearch, FaTrash } from 'react-icons/fa';
 import { BsGripVertical } from 'react-icons/bs';
 import { IoDocumentText } from 'react-icons/io5';
-import { assignments as assignmentsData } from '../../../Database';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteAssignment } from './reducer'; // Adjust path as needed
 
 export default function Assignments({ params }: { params: { cid: string } }) {
-  // Get assignments array from the imported data
-  const assignments = assignmentsData.assignments || assignmentsData;
+  const router = useRouter();
+  const dispatch = useDispatch();
+  
+  // Get assignments from Redux store
+  const { assignments } = useSelector((state: any) => state.assignmentsReducer);
   
   // Filter assignments for the current course
   const courseAssignments = assignments.filter(
-    assignment => assignment.course === params.cid
+    (assignment: any) => assignment.course === params.cid
   );
 
   // Format date for display
   const formatDate = (dateString: string) => {
+    if (!dateString) return 'No date set';
+    
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { 
       month: 'short', 
@@ -29,7 +37,28 @@ export default function Assignments({ params }: { params: { cid: string } }) {
     const formattedDate = date.toLocaleDateString('en-US', options);
     const formattedTime = date.toLocaleTimeString('en-US', timeOptions).toLowerCase();
     
-    return `${formattedDate} at ${formattedTime}`;
+    // Check if time is included in the date string
+    if (dateString.includes('T')) {
+      return `${formattedDate} at ${formattedTime}`;
+    } else {
+      return `${formattedDate} at 11:59 pm`;
+    }
+  };
+
+  // Handle Add Assignment click
+  const handleAddAssignment = () => {
+    router.push(`/Courses/${params.cid}/Assignments/new`);
+  };
+
+  // Handle Delete Assignment
+  const handleDeleteAssignment = (assignmentId: string, assignmentTitle: string) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to remove the assignment "${assignmentTitle}"?`
+    );
+    
+    if (confirmDelete) {
+      dispatch(deleteAssignment(assignmentId));
+    }
   };
 
   return (
@@ -52,7 +81,11 @@ export default function Assignments({ params }: { params: { cid: string } }) {
           <button className='btn btn-secondary me-1' id='wd-add-assignment-group'>
             <FaPlus className='me-1' /> Group
           </button>
-          <button className='btn btn-danger' id='wd-add-assignment'>
+          <button 
+            className='btn btn-danger' 
+            id='wd-add-assignment'
+            onClick={handleAddAssignment}
+          >
             <FaPlus className='me-1' /> Assignment
           </button>
         </div>
@@ -76,37 +109,55 @@ export default function Assignments({ params }: { params: { cid: string } }) {
         </li>
 
         {/* Assignment Items */}
-        {courseAssignments.map((assignment) => (
-          <li 
-            key={assignment._id}
-            className='list-group-item wd-assignment-list-item' 
-            style={{ borderLeft: '3px solid #198754' }}
-          >
-            <div className='d-flex align-items-start py-2'>
-              <BsGripVertical className='me-2 text-muted mt-1' />
-              <IoDocumentText className='me-3 text-success fs-5 mt-1' />
-              <div className='flex-grow-1'>
-                <Link
-                  href={`/Courses/${params.cid}/Assignments/${assignment._id}`}
-                  className='wd-assignment-link text-decoration-none fw-bold text-dark'
-                >
-                  {assignment._id} - {assignment.title}
-                </Link>
-                <div className='small text-muted mt-1'>
-                  <span className='text-danger'>Multiple Modules</span> | 
-                  <strong> Not available until</strong> {formatDate(assignment.availableFrom + 'T00:00:00')} |
-                </div>
-                <div className='small text-muted'>
-                  <strong>Due</strong> {formatDate(assignment.dueDate)} | {assignment.points} pts
-                </div>
-              </div>
-              <div className='d-flex align-items-center'>
-                <FaCheckCircle className='text-success me-2' />
-                <FaEllipsisV className='text-muted' />
-              </div>
+        {courseAssignments.length === 0 ? (
+          <li className='list-group-item'>
+            <div className='text-center text-muted py-3'>
+              No assignments yet. Click + Assignment to create one.
             </div>
           </li>
-        ))}
+        ) : (
+          courseAssignments.map((assignment: any) => (
+            <li 
+              key={assignment._id}
+              className='list-group-item wd-assignment-list-item' 
+              style={{ borderLeft: '3px solid #198754' }}
+            >
+              <div className='d-flex align-items-start py-2'>
+                <BsGripVertical className='me-2 text-muted mt-1' />
+                <IoDocumentText className='me-3 text-success fs-5 mt-1' />
+                <div className='flex-grow-1'>
+                  <Link
+                    href={`/Courses/${params.cid}/Assignments/${assignment._id}`}
+                    className='wd-assignment-link text-decoration-none fw-bold text-dark'
+                  >
+                    {assignment.title}
+                  </Link>
+                  <div className='small text-muted mt-1'>
+                    <span className='text-danger'>Multiple Modules</span> | 
+                    {assignment.availableFrom && (
+                      <>
+                        <strong> Not available until</strong> {formatDate(assignment.availableFrom)} |
+                      </>
+                    )}
+                  </div>
+                  <div className='small text-muted'>
+                    <strong>Due</strong> {formatDate(assignment.dueDate)} | {assignment.points || 100} pts
+                  </div>
+                </div>
+                <div className='d-flex align-items-center'>
+                  <FaCheckCircle className='text-success me-2' />
+                  <FaTrash 
+                    className='text-danger me-2' 
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleDeleteAssignment(assignment._id, assignment.title)}
+                    id={`wd-delete-assignment-${assignment._id}`}
+                  />
+                  <FaEllipsisV className='text-muted' />
+                </div>
+              </div>
+            </li>
+          ))
+        )}
       </ul>
     </div>
   );

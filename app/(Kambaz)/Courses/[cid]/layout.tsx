@@ -1,6 +1,8 @@
 'use client';
 import { ReactNode, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useSelector } from "react-redux";
+import { useParams } from "next/navigation";
 import CourseNavigation from './Navigation';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { AiOutlineDashboard } from 'react-icons/ai';
@@ -10,17 +12,13 @@ import { FaInbox, FaRegCircleUser } from 'react-icons/fa6';
 import Link from 'next/link';
 import { courses } from '../../Database';
 
-export default function CoursesLayout({
-  children,
-  params,
-}: {
-  children: ReactNode;
-  params: { cid: string };
-}) {
+export default function CoursesLayout({children,params,}: {children: ReactNode; params: { cid: string };}) {
   const [showMainNav, setShowMainNav] = useState(false);
   const [showCourseNav, setShowCourseNav] = useState(false);
-  const course = courses.find((course) => course._id === params.cid);
   const pathname = usePathname();
+  const { cid } = useParams(); 
+  const { courses } = useSelector((state: any) => state.coursesReducer);
+  const course = courses.find((course: any) => course._id === cid);
 
   // Extract the current section from pathname for breadcrumb
   const pathSegments = pathname.split('/').filter((segment) => segment);
@@ -149,7 +147,7 @@ export default function CoursesLayout({
       {/* Desktop breadcrumb - only visible on medium screens and up */}
       {course?.name && currentSection && (
         <div className='text-danger fs-4 mb-2 d-none d-md-block'>
-          ☰ {course.name} &gt; {currentSection}
+          ☰ {course?.name} &gt; {currentSection}
         </div>
       )}
 

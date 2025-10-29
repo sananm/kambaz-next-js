@@ -125,6 +125,20 @@
       "section": "S103",
       "lastActivity": "2020-12-05",
       "totalActivity": "22:30:10"
+    },
+    {
+      "_id": "012",
+      "username": "sanan",
+      "password": "sanan",
+      "firstName": "Sanan",
+      "lastName": "Moin",
+      "email": "sm@gmail.com",
+      "dob": "1999-01-01",
+      "role": "ADMIN",
+      "loginId": "001234569A",
+      "section": "S000",
+      "lastActivity": "2024-06-01",
+      "totalActivity": "100:00:00"
     }
   ]
 }

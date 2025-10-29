@@ -1,28 +1,26 @@
 'use client';
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import KambazNavigation from "./Navigation";
-import { FaBars, FaTimes } from "react-icons/fa";
+import store from "./store";
+import { Provider } from "react-redux";
 import "./styles.css";
 
 export default function KambazLayout({ children }: { children: ReactNode }) {
-  const [showMainNav, setShowMainNav] = useState(false);
-
   return (
-    <div id="wd-kambaz">
-      <div className="d-flex">
-        {/* Desktop main navigation - hidden on mobile */}
-        <div className="d-none d-md-block">
-          <KambazNavigation />
-        </div>
-        
+    <Provider store={store}>
+      <div id="wd-kambaz">
+        <div className="d-flex">
+          {/* Desktop main navigation - hidden on mobile */}
+          <div className="d-none d-md-block">
+            <KambazNavigation />
+          </div>
 
-        
-
-        {/* Main content */}
-        <div className="wd-main-content-offset p-3 flex-fill">
-          {children}
+          {/* Main content */}
+          <div className="wd-main-content-offset p-3 flex-fill">
+            {children}
+          </div>
         </div>
       </div>
-    </div>
+    </Provider>
   );
 }
