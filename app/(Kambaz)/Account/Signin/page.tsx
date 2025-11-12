@@ -37,6 +37,13 @@ export default function Signin() {
     <div id="wd-signin-screen" style={{ maxWidth: "400px" }}>
       <h3>Sign in</h3>
       {error && <div className="alert alert-danger">{error}</div>}
+      <div className="alert alert-info" style={{ fontSize: "0.9em", padding: "8px 12px" }}>
+        <strong>Demo accounts:</strong>
+        <br />
+        Student: iron_man / stark123
+        <br />
+        Admin: sanan / sanan
+      </div>
       <div style={{ marginBottom: "15px" }}>
         <input
           value={credentials.username}
