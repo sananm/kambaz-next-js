@@ -17,7 +17,7 @@ export default function Signup() {
   const signup = async () => {
     // basic client-side validation to avoid empty submissions
     if (!user.username || !user.password) {
-      setError('Please enter a username and password.');
+      setError('Please enter a username and password');
       return;
     }
     setError('');
