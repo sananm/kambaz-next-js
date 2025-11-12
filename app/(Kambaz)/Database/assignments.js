@@ -1,5 +1,4 @@
-{
-  "assignments": [
+export default [
     {
       "_id": "A101",
       "title": "Propulsion Assignment",
@@ -91,4 +90,3 @@
       "description": "Comprehensive exam on spacecraft systems engineering"
     }
   ]
-}

@@ -1,69 +1,86 @@
-'use client';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { setCurrentUser } from '../reducer';
-import { useDispatch } from 'react-redux';
-import { useState } from 'react';
-import * as db from '../../Database';
-import { FormControl, Button } from 'react-bootstrap';
+"use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import * as client from "../client";
+import { useDispatch } from "react-redux";
+import { setCurrentUser } from "../reducer";
 
 export default function Signin() {
-  const [credentials, setCredentials] = useState<any>({});
-  const dispatch = useDispatch();
   const router = useRouter();
-  const signin = () => {
-    const user = db.users.users.find(
-      (u: any) =>
-        u.username === credentials.username &&
-        u.password === credentials.password,
-    );
-    if (!user) return;
-    dispatch(setCurrentUser(user));
-    router.push('/Dashboard');
+  const dispatch = useDispatch();
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSignin = async () => {
+    setError("");
+    if (!credentials.username || !credentials.password) {
+      setError("Please enter username and password");
+      return;
+    }
+    setLoading(true);
+    try {
+  const user = await client.signin(credentials);
+  dispatch(setCurrentUser(user));
+  // After signing in, send the user to the dashboard per requested behavior
+  router.push('/Dashboard');
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || 'Sign in failed');
+      console.error('signin error', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className='d-flex justify-content-center align-items-center min-vh-100 bg-light'>
-      <div
-        id='wd-signin-screen'
-        className='card p-4'
-        style={{ width: '400px' }}
-      >
-        <h1 className='text-center mb-4'>Sign in</h1>
-
-        <FormControl
-          defaultValue={credentials.username}
-          onChange={(e) =>
-            setCredentials({ ...credentials, username: e.target.value })
-          }
-          id='wd-username'
-          placeholder='Username'
-          className='mb-3'
+    <div id="wd-signin-screen" style={{ maxWidth: "400px" }}>
+      <h3>Sign in</h3>
+      {error && <div className="alert alert-danger">{error}</div>}
+      <div style={{ marginBottom: "15px" }}>
+        <input
+          value={credentials.username}
+          onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+          placeholder="username"
+          className="wd-username form-control"
+          style={{
+            width: "100%",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
         />
-
-        <FormControl
-          defaultValue={credentials.password}
-          onChange={(e) =>
-            setCredentials({ ...credentials, password: e.target.value })
-          }
-          id='wd-password'
-          placeholder='Password'
-          type='password'
-          className='mb-3'
-        />
-
-        <Button onClick={signin} id='wd-signin-btn' className='w-100'>
-          {' '}
-          Sign in{' '}
-        </Button>
-
-        <div className='text-center'>
-          <span className='text-muted'>Don't have an account? </span>
-          <Link id='wd-signup-link' href='/Account/Signup'>
-            Sign up
-          </Link>
-        </div>
       </div>
+      <div style={{ marginBottom: "15px" }}>
+        <input
+          value={credentials.password}
+          onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+          placeholder="password"
+          type="password"
+          className="wd-password form-control"
+          style={{
+            width: "100%",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
+        />
+      </div>
+      <button
+        id="wd-signin-btn"
+        onClick={handleSignin}
+        disabled={loading}
+        className="btn btn-danger w-100 mb-2"
+      >
+        {loading ? 'Signing in...' : 'Sign in'}
+      </button>
+      <Link
+        href="/Account/Signup"
+        id="wd-signup-link"
+        style={{ color: "blue", textDecoration: "none" }}
+      >
+        Sign up
+      </Link>
     </div>
   );
 }

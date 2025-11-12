@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addAssignment, updateAssignment } from '../reducer'; // Adjust path to your reducer location
+import { addAssignment, updateAssignment } from '../reducer';
+import * as client from '../client';
 
 export default function AssignmentEditor() {
   const { cid, aid } = useParams<{ cid: string; aid: string }>();
@@ -92,7 +93,7 @@ export default function AssignmentEditor() {
   };
 
   // Handle Save
-  const handleSave = () => {
+  const handleSave = async () => {
     // Validation
     if (!formData.title.trim()) {
       alert('Assignment name is required');
@@ -131,19 +132,26 @@ export default function AssignmentEditor() {
       completed: existingAssignment?.completed || false
     };
 
-    if (isNew) {
-      // Create new assignment
-      dispatch(addAssignment(assignmentData));
-    } else {
-      // Update existing assignment
-      dispatch(updateAssignment({
-        _id: aid,
-        ...assignmentData
-      }));
+    try {
+      if (isNew) {
+        // Create new assignment on server
+        const newAssignment = await client.createAssignment(cid, assignmentData);
+        dispatch(addAssignment(newAssignment));
+      } else {
+        // Update existing assignment on server
+        const updatedAssignment = await client.updateAssignment(cid, {
+          _id: aid,
+          ...assignmentData
+        });
+        dispatch(updateAssignment(updatedAssignment));
+      }
+
+      // Navigate back to assignments list
+      router.push(`/Courses/${cid}/Assignments`);
+    } catch (error) {
+      console.error('Error saving assignment:', error);
+      alert('Failed to save assignment');
     }
-    
-    // Navigate back to assignments list
-    router.push(`/Courses/${cid}/Assignments`);
   };
 
   // Handle Cancel

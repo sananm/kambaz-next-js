@@ -1,21 +1,36 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { FaCheckCircle, FaEllipsisV, FaPlus, FaSearch, FaTrash } from 'react-icons/fa';
 import { BsGripVertical } from 'react-icons/bs';
 import { IoDocumentText } from 'react-icons/io5';
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteAssignment } from './reducer'; // Adjust path as needed
+import { setAssignments, deleteAssignment as deleteAssignmentAction } from './reducer';
+import * as client from './client';
 
 export default function Assignments({ params }: { params: { cid: string } }) {
   const router = useRouter();
   const dispatch = useDispatch();
-  
+
   // Get assignments from Redux store
   const { assignments } = useSelector((state: any) => state.assignmentsReducer);
-  
-  // Filter assignments for the current course
-  const courseAssignments = assignments.filter(
+
+  // Fetch assignments from server on mount
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const courseAssignments = await client.findAssignmentsForCourse(params.cid);
+        dispatch(setAssignments(courseAssignments));
+      } catch (error) {
+        console.error('Error fetching assignments:', error);
+      }
+    };
+    fetchAssignments();
+  }, [params.cid, dispatch]);
+
+  // Filter assignments for the current course (local filtering for immediate UI updates)
+  const courseAssignments = (assignments || []).filter(
     (assignment: any) => assignment.course === params.cid
   );
 
@@ -51,13 +66,19 @@ export default function Assignments({ params }: { params: { cid: string } }) {
   };
 
   // Handle Delete Assignment
-  const handleDeleteAssignment = (assignmentId: string, assignmentTitle: string) => {
+  const handleDeleteAssignment = async (assignmentId: string, assignmentTitle: string) => {
     const confirmDelete = window.confirm(
       `Are you sure you want to remove the assignment "${assignmentTitle}"?`
     );
-    
+
     if (confirmDelete) {
-      dispatch(deleteAssignment(assignmentId));
+      try {
+        await client.deleteAssignment(params.cid, assignmentId);
+        dispatch(deleteAssignmentAction(assignmentId));
+      } catch (error) {
+        console.error('Error deleting assignment:', error);
+        alert('Failed to delete assignment');
+      }
     }
   };
 

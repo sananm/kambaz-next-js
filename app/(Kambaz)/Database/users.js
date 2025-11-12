@@ -1,5 +1,4 @@
-{
-  "users": [
+export default [
     {
       "_id": "123",
       "username": "iron_man",
@@ -139,6 +138,19 @@
       "section": "S000",
       "lastActivity": "2024-06-01",
       "totalActivity": "100:00:00"
+    },
+    {
+      "_id": "lee1212",
+      "username": "lee1212",
+      "password": "lee1212",
+      "firstName": "Lee",
+      "lastName": "Test",
+      "email": "lee@test.com",
+      "dob": "2000-01-01",
+      "role": "STUDENT",
+      "loginId": "001234570S",
+      "section": "S101",
+      "lastActivity": "2025-11-11",
+      "totalActivity": "50:00:00"
     }
   ]
-}
