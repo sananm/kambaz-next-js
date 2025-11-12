@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { FormControl } from "react-bootstrap";
 import { Todo } from "./types";
+import * as client from "./client";
 
 const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 const TODOS_API = `${HTTP_SERVER}/lab5/todos`;
@@ -13,10 +14,36 @@ export default function WorkingWithArrays() {
     description: "Create a NodeJS server with ExpressJS",
     completed: false,
   });
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const deleteTodo = async (todo: Todo) => {
+    try {
+      setErrorMessage("");
+      await client.removeTodo(todo);
+      alert(`Todo with ID ${todo.id} deleted successfully`);
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.message || error.message || "Error deleting todo");
+    }
+  };
+
+  const updateTodo = async (todo: Todo) => {
+    try {
+      setErrorMessage("");
+      await client.updateTodo(todo);
+      alert(`Todo with ID ${todo.id} updated successfully`);
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.message || error.message || "Error updating todo");
+    }
+  };
 
   return (
     <div id="wd-working-with-arrays">
       <h3>Working with Arrays</h3>
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
+      )}
       <h4>Retrieving Arrays</h4>
       <a id="wd-retrieve-todos" className="btn btn-primary" href={TODOS_API}>
         Get Todos
@@ -57,13 +84,13 @@ export default function WorkingWithArrays() {
       </a>
       <hr />
       <h4>Deleting from an Array</h4>
-      <a
-        id="wd-delete-todo-with-id-1"
+      <button
+        id="wd-delete-todo"
         className="btn btn-primary float-end"
-        href={`${TODOS_API}/1/delete`}
+        onClick={() => deleteTodo(todo)}
       >
-        Delete Todo with ID = 1
-      </a>
+        Delete Todo
+      </button>
       <FormControl
         type="number"
         value={todo.id}
@@ -72,12 +99,13 @@ export default function WorkingWithArrays() {
       />
       <hr />
       <h4>Updating an Item in an Array</h4>
-      <a
-        href={`${TODOS_API}/${todo.id}/title/${todo.title}`}
+      <button
+        id="wd-update-todo"
         className="btn btn-primary float-end"
+        onClick={() => updateTodo(todo)}
       >
         Update Todo
-      </a>
+      </button>
       <FormControl
         type="number"
         value={todo.id}
