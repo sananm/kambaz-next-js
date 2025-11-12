@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { assignments } from "../../../Database/assignments";
+import assignments from "../../../Database/assignments";
 
 type AssignmentsState = {
     assignments: any[];

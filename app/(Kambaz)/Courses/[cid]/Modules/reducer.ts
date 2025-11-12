@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { modules } from "../../../Database";
+import Database from "../../../Database";
 const initialState = {
-  modules: modules,
+  modules: Database.modules,
 };
 const modulesSlice = createSlice({
   name: "modules",
