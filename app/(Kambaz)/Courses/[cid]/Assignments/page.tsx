@@ -35,28 +35,38 @@ export default function Assignments({ params }: { params: { cid: string } }) {
   );
 
   // Format date for display
-  const formatDate = (dateString: string) => {
+  // isStartDate: true for "available from" (12am), false for "due date" (11:59pm)
+  const formatDate = (dateString: string, isStartDate: boolean = false) => {
     if (!dateString) return 'No date set';
-    
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { 
-      month: 'short', 
-      day: 'numeric' 
+
+    let date;
+    if (dateString.includes('T')) {
+      // If datetime string, parse normally
+      date = new Date(dateString);
+    } else {
+      // For date-only strings, parse as local time to avoid timezone issues
+      const [year, month, day] = dateString.split('-').map(Number);
+      date = new Date(year, month - 1, day);
+    }
+
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric'
     };
-    const timeOptions: Intl.DateTimeFormatOptions = {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    };
-    
+
     const formattedDate = date.toLocaleDateString('en-US', options);
-    const formattedTime = date.toLocaleTimeString('en-US', timeOptions).toLowerCase();
-    
+
     // Check if time is included in the date string
     if (dateString.includes('T')) {
+      const timeOptions: Intl.DateTimeFormatOptions = {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      };
+      const formattedTime = date.toLocaleTimeString('en-US', timeOptions).toLowerCase();
       return `${formattedDate} at ${formattedTime}`;
     } else {
-      return `${formattedDate} at 11:59 pm`;
+      return `${formattedDate} at ${isStartDate ? '12:00 am' : '11:59 pm'}`;
     }
   };
 
@@ -157,7 +167,7 @@ export default function Assignments({ params }: { params: { cid: string } }) {
                     <span className='text-danger'>Multiple Modules</span> | 
                     {assignment.availableFrom && (
                       <>
-                        <strong> Not available until</strong> {formatDate(assignment.availableFrom)} |
+                        <strong> Not available until</strong> {formatDate(assignment.availableFrom, true)} |
                       </>
                     )}
                   </div>

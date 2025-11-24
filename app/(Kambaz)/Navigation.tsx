@@ -12,8 +12,8 @@ export default function KambazNavigation() {
   const links = [
     { label: 'Dashboard', path: '/Dashboard', icon: AiOutlineDashboard },
     { label: 'Courses', path: '/Dashboard', icon: LiaBookSolid },
-    { label: 'Calendar', path: '/Calendar', icon: IoCalendarOutline },
-    { label: 'Inbox', path: '/Inbox', icon: FaInbox },
+    { label: 'Calendar', path: 'https://registrar.northeastern.edu/article/academic-calendar/', icon: IoCalendarOutline, external: true },
+    { label: 'Inbox', path: 'https://outlook.office.com/', icon: FaInbox, external: true },
     { label: 'Labs', path: '/Labs', icon: LiaCogSolid },
   ];
 
@@ -50,11 +50,13 @@ export default function KambazNavigation() {
         <br />
         Account
       </ListGroupItem>
-      {links.map((link) => (
+      {links.map((link: any) => (
         <ListGroupItem
           key={link.path}
-          as={Link}
+          as={link.external ? 'a' : Link}
           href={link.path}
+          target={link.external ? '_blank' : undefined}
+          rel={link.external ? 'noopener noreferrer' : undefined}
           className={`bg-black text-center border-0
               ${
                 pathname.includes(link.label)

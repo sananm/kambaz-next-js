@@ -25,13 +25,14 @@ export default function Dashboard() {
 
   const [course, setCourse] = useState<any>({
     _id: '0',
-    name: 'New Course',
-    number: 'New Number',
+    name: '',
+    number: '',
     startDate: '2023-09-10',
     endDate: '2023-12-15',
     image: '/images/reactjs.jpg',
-    description: 'New Description',
+    description: '',
   });
+  const [courseError, setCourseError] = useState('');
 
   const fetchCourses = async () => {
     try {
@@ -103,13 +104,35 @@ export default function Dashboard() {
   };
 
   const addNewCourseHandler = async () => {
+    // Validate required fields
+    if (!course.name.trim()) {
+      setCourseError('Course name is required');
+      return;
+    }
+    if (!course.description.trim()) {
+      setCourseError('Course description is required');
+      return;
+    }
+    setCourseError('');
+
     try {
       console.log('Creating course:', course);
       const newCourse = await client.createCourse(course);
       console.log('Course created:', newCourse);
       dispatch(addNewCourse(newCourse));
+      // Clear the form after successful creation
+      setCourse({
+        _id: '0',
+        name: '',
+        number: '',
+        startDate: '2023-09-10',
+        endDate: '2023-12-15',
+        image: '/images/reactjs.jpg',
+        description: '',
+      });
     } catch (error) {
       console.error('Error creating course:', error);
+      setCourseError('Failed to create course. Please try again.');
     }
   };
 
@@ -163,9 +186,11 @@ export default function Dashboard() {
         </button>
       </h5>
       <br />
+      {courseError && <div className="alert alert-danger">{courseError}</div>}
       <FormControl
         value={course.name}
         className='mb-2'
+        placeholder='Course Name *'
         onChange={(e) => setCourse({ ...course, name: e.target.value })}
       />
       <FormControl
@@ -173,6 +198,7 @@ export default function Dashboard() {
         value={course.description}
         rows={3}
         className='mb-2'
+        placeholder='Course Description *'
         onChange={(e) => setCourse({ ...course, description: e.target.value })}
       />
       <hr />
@@ -191,7 +217,10 @@ export default function Dashboard() {
       <hr />
       <div id='wd-dashboard-courses'>
         <Row xs={1} md={5} className='g-4'>
-          {(courses ?? []).map((c: any) => (
+          {(courses ?? [])
+            .slice()
+            .sort((a: any, b: any) => a.name.localeCompare(b.name))
+            .map((c: any) => (
             <Col
               key={c._id}
               className='wd-dashboard-course'
@@ -245,23 +274,17 @@ export default function Dashboard() {
                       >
                         Edit
                       </button>
-                      <button
-                        onClick={(event) => {
-                          event.preventDefault();
-                          handleUnenroll(c._id);
-                        }}
-                        className='btn btn-secondary float-end me-2'
-                      >
-                        Unenroll
-                      </button>
                     </>
                   )}
 
                   {showAllCourses && (
                     <>
                       {isEnrolled(c._id) ? (
-                        <Button variant='secondary' disabled>
-                          Enrolled
+                        <Button
+                          variant='danger'
+                          onClick={() => handleUnenroll(c._id)}
+                        >
+                          Unenroll
                         </Button>
                       ) : (
                         <Button

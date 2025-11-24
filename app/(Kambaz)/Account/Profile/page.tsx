@@ -143,16 +143,20 @@ export default function Profile() {
           className="form-select"
           style={{ width: "100%", padding: "10px", border: "1px solid #ccc", borderRadius: "4px" }}
         >
-          <option value="USER">User</option>
-          <option value="ADMIN">Admin</option>
-          <option value="FACULTY">Faculty</option>
           <option value="STUDENT">Student</option>
+          <option value="TA">Assistant</option>
+          <option value="FACULTY">Faculty</option>
+          <option value="ADMIN">Admin</option>
         </select>
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
       {message && <div className="alert alert-success">{message}</div>}
       <button onClick={updateProfile} className="btn btn-primary w-100 mb-2" disabled={saving}>{saving ? 'Saving...' : 'Update'}</button>
-      <button onClick={() => { dispatch(setCurrentUser(null)); router.push('/Account/Signin'); }} className="btn btn-danger w-100"> Sign out </button>
+      <button onClick={async () => {
+        try { await client.signout(); } catch (e) { console.error(e); }
+        dispatch(setCurrentUser(null));
+        router.push('/Account/Signin');
+      }} className="btn btn-danger w-100"> Sign out </button>
       
     </div>
   );

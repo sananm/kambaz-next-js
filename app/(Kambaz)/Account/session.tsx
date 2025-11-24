@@ -1,29 +1,33 @@
+"use client";
 import * as client from "./client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setCurrentUser } from "./reducer";
 import { useDispatch } from "react-redux";
+import { SessionContext } from "./SessionContext";
 
-// Session now fetches profile in the background and does NOT block rendering.
-// This avoids showing a "checking session" or blank screen on reload.
 export default function Session({ children }: { children: any }) {
+  const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    let mounted = true;
-    const fetchProfile = async () => {
-      try {
-        const currentUser = await client.profile();
-        if (mounted && currentUser) dispatch(setCurrentUser(currentUser));
-      } catch (err: any) {
-        // ignore errors silently; user will see signin UI if unauthenticated
-        console.debug('session fetch failed', err?.message || err);
-      }
-    };
-    fetchProfile();
-    return () => {
-      mounted = false;
-    };
-  }, [dispatch]);
+  const fetchProfile = async () => {
+    try {
+      const currentUser = await client.profile();
+      dispatch(setCurrentUser(currentUser));
+    } catch (err: any) {
+      // User not logged in or session expired - this is expected
+      console.log("No active session found");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  return children;
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  return (
+    <SessionContext.Provider value={{ isLoading }}>
+      {children}
+    </SessionContext.Provider>
+  );
 }

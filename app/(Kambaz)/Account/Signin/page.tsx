@@ -1,17 +1,27 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as client from "../client";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUser } from "../reducer";
+import { useSession } from "../SessionContext";
 
 export default function Signin() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { currentUser } = useSelector((state: any) => state.accountReducer);
+  const { isLoading } = useSession();
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Redirect to Dashboard if already logged in
+  useEffect(() => {
+    if (!isLoading && currentUser) {
+      router.replace("/Dashboard");
+    }
+  }, [isLoading, currentUser, router]);
 
   const handleSignin = async () => {
     setError("");
