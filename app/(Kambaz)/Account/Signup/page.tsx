@@ -14,6 +14,8 @@ export default function Signup() {
     password: "",
     firstName: "",
     lastName: "",
+    email: "",
+    dob: "",
   });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string>("");
@@ -83,6 +85,24 @@ export default function Signup() {
         className="wd-lastname mb-2"
         placeholder="Last Name *"
       />
+
+      <FormControl
+        value={user.email}
+        onChange={(e) => setUser({ ...user, email: e.target.value })}
+        className="wd-email mb-2"
+        placeholder="Email"
+        type="email"
+      />
+
+      <div className="mb-2">
+        <label className="form-label text-muted small">Date of Birth</label>
+        <FormControl
+          value={user.dob}
+          onChange={(e) => setUser({ ...user, dob: e.target.value })}
+          className="wd-dob"
+          type="date"
+        />
+      </div>
 
       <FormControl
         value={user.username}

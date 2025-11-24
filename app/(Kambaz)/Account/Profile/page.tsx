@@ -36,6 +36,18 @@ export default function Profile() {
     role: "",
   });
 
+  // Format date for HTML date input (YYYY-MM-DD)
+  const formatDateForInput = (dateValue: any) => {
+    if (!dateValue) return "";
+    try {
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return "";
+      return date.toISOString().split('T')[0];
+    } catch {
+      return "";
+    }
+  };
+
   useEffect(() => {
     if (currentUser) {
       setUser({
@@ -43,7 +55,7 @@ export default function Profile() {
         password: currentUser.password ?? "",
         firstName: currentUser.firstName ?? currentUser.first_name ?? "",
         lastName: currentUser.lastName ?? currentUser.last_name ?? "",
-        dob: currentUser.dob ?? currentUser.dateOfBirth ?? "",
+        dob: formatDateForInput(currentUser.dob ?? currentUser.dateOfBirth),
         email: currentUser.email ?? "",
         role: currentUser.role ?? "",
       });
